@@ -7,7 +7,6 @@ module Percent
         def percentize(*columns)
           # initialize options
           options = columns.extract_options!
-          options[:hide_percent_sign] = options.fetch :hide_percent_sign, true
 
           columns.each do |column|
             column_name = column.to_s

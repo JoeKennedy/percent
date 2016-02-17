@@ -6,7 +6,6 @@ describe Percentage do
 
   describe 'methods' do
     it { is_expected.to respond_to(:value) }
-    it { is_expected.to respond_to(:hide_percent_sign?) }
     it { is_expected.to respond_to(:to_i) }
     it { is_expected.to respond_to(:to_c) }
     it { is_expected.to respond_to(:to_d) }
@@ -19,6 +18,7 @@ describe Percentage do
     it { is_expected.to respond_to(:to_s) }
     it { is_expected.to respond_to(:to_str) }
     it { is_expected.to respond_to(:to_string) }
+    it { is_expected.to respond_to(:format) }
     it { is_expected.to respond_to(:to_amount) }
     it { is_expected.to respond_to(:inspect) }
     it { is_expected.to respond_to(:==) }
@@ -44,7 +44,7 @@ describe Percentage do
 
       it 'should equal the given percentage' do
         expect(subject.value).to eql decimal_value
-        expect(subject.to_string).to eql string_value
+        expect(subject.format).to eql string_value
       end
     end
 
@@ -229,36 +229,6 @@ describe Percentage do
         end
       end
     end
-
-    describe '#hide_percent_sign?' do
-      let (:value) { BigDecimal(2) }
-
-      context 'when nothing is passed to an initialization method' do
-        it 'should return that value' do
-          expect(subject.hide_percent_sign?).to eql false
-          expect(Percentage.from_fraction.hide_percent_sign?).to eql false
-          expect(Percentage.from_amount.hide_percent_sign?).to eql false
-        end
-      end
-
-      context 'when a false value is passed to an initialization method' do
-        it 'should return 0' do
-          options = { hide_percent_sign: false }
-          expect(Percentage.new(value, options).hide_percent_sign?).to eql false
-          expect(Percentage.from_fraction(value, options).hide_percent_sign?).to eql false
-          expect(Percentage.from_amount(value, options).hide_percent_sign?).to eql false
-        end
-      end
-
-      context 'when a true value is passed to an initialization method' do
-        it 'should return 0' do
-          options = { hide_percent_sign: true }
-          expect(Percentage.new(value, options).hide_percent_sign?).to eql true
-          expect(Percentage.from_fraction(value, options).hide_percent_sign?).to eql true
-          expect(Percentage.from_amount(value, options).hide_percent_sign?).to eql true
-        end
-      end
-    end
   end
 
   context 'Conversions' do
@@ -336,6 +306,28 @@ describe Percentage do
       end
     end
 
+    describe '#to_s' do
+      context 'with a numeric value of 75' do
+        it 'should return "75"' do
+          expect(subject.to_s).to eql '75'
+        end
+      end
+
+      context 'with a numeric value of 0.75' do
+        let (:value) { 0.75 }
+        it 'should return "75"' do
+          expect(subject.to_s).to eql '75'
+        end
+      end
+
+      context 'with a numeric value of 0.755' do
+        let (:value) { 0.755 }
+        it 'should return "75.5"' do
+          expect(subject.to_s).to eql '75.5'
+        end
+      end
+    end
+
     describe '#to_str' do
       context 'with a numeric value of 75' do
         it 'should return "0.75"' do
@@ -346,8 +338,111 @@ describe Percentage do
 
     describe '#to_string' do
       context 'with a numeric value of 75' do
-        it 'should return "75.0%"' do
-          expect(subject.to_string).to eql '75.0%'
+        it 'should return "75%"' do
+          expect(subject.to_string).to eql '75%'
+        end
+      end
+
+      context 'with a numeric value of 0.75' do
+        let (:value) { 0.75 }
+        it 'should return "75%"' do
+          expect(subject.to_string).to eql '75%'
+        end
+      end
+
+      context 'with a numeric value of 0.755' do
+        let (:value) { 0.755 }
+        it 'should return "75.5%"' do
+          expect(subject.to_string).to eql '75.5%'
+        end
+      end
+    end
+
+    describe "#format" do
+      context 'with a value of 0.6666' do
+        let (:value) { 0.6666 }
+
+        context 'when passed no options' do
+          it 'should return "66.66%"' do
+            expect(subject.format).to eql '66.66%'
+          end
+        end
+
+        context 'when passed percent_sign: true' do
+          it 'should return "66.66%"' do
+            expect(subject.format percent_sign: true).to eql '66.66%'
+          end
+        end
+
+        context 'when passed percent_sign: false' do
+          it 'should return "66.66"' do
+            expect(subject.format percent_sign: false).to eql '66.66'
+          end
+        end
+
+        context 'when passed as_decimal: true' do
+          it 'should return "0.6666"' do
+            expect(subject.format as_decimal: true).to eql '0.6666'
+          end
+        end
+
+        context 'when passed rounded: true' do
+          it 'should return "67%"' do
+            expect(subject.format rounded: true).to eql '67%'
+          end
+        end
+
+        context 'when passed no_decimal: true' do
+          it 'should return "66%"' do
+            expect(subject.format no_decimal: true).to eql '66%'
+          end
+        end
+
+        context 'when passed no_decimal_if_whole: true' do
+          it 'should return "66.66%"' do
+            expect(subject.format no_decimal_if_whole: true).to eql '66.66%'
+          end
+        end
+
+        context 'when passed space_before_sign: true' do
+          it 'should return "66.66 %"' do
+            expect(subject.format space_before_sign: true).to eql '66.66 %'
+          end
+        end
+
+        context 'when passed percent_sign: false, rounded: true, space_before_sign: true' do
+          it 'should return "67 "' do
+            f = subject.format percent_sign: false, rounded: true, space_before_sign: true
+            expect(f).to eql '67 '
+          end
+        end
+
+        context 'when passed no_decimal: true, space_before_sign: true' do
+          it 'should return "66 %"' do
+            f = subject.format no_decimal: true, space_before_sign: true
+            expect(f).to eql '66 %'
+          end
+        end
+
+        context 'when passed percent_sign: false, as_decimal: true, no_decimal: true' do
+          it 'should return "0.6666"' do
+            f = subject.format percent_sign: false, as_decimal: true, no_decimal: true
+            expect(f).to eql '0.6666'
+          end
+        end
+
+        context 'when passed no_decimal_if_whole: true, no_decimal: true, rounded: true' do
+          it 'should return "67%"' do
+            f = subject.format no_decimal_if_whole: true, no_decimal: true, rounded: true
+            expect(f).to eql '67%'
+          end
+        end
+
+        context 'when passed no_decimal_if_whole: true, no_decimal: true' do
+          it 'should return "66%"' do
+            f = subject.format no_decimal_if_whole: true, no_decimal: true
+            expect(f).to eql '66%'
+          end
         end
       end
     end
@@ -370,54 +465,6 @@ describe Percentage do
         let (:value) { 0.755 }
         it 'should return 75.5' do
           expect(subject.to_amount).to eql 75.5
-        end
-      end
-    end
-
-    describe '#to_s' do
-      context 'with a numeric value of 75' do
-        it 'should return "75%"' do
-          expect(subject.to_s).to eql '75%'
-        end
-
-        context 'with no hide_percent_sign option value at init' do
-          it 'should return "75" when passed true and "75%" otherwise' do
-            expect(subject.to_s).to eql '75%'
-            expect(subject.to_s(true)).to eql '75'
-            expect(subject.to_s(false)).to eql '75%'
-          end
-        end
-
-        context 'when passed hide_percent_sign true at init' do
-          let (:subject) { Percentage.new value, hide_percent_sign: true }
-          it 'should return "75%" when passed false and "75" otherwise' do
-            expect(subject.to_s).to eql '75'
-            expect(subject.to_s(false)).to eql '75%'
-            expect(subject.to_s(true)).to eql '75'
-          end
-        end
-
-        context 'when passed hide_percent_sign false at init' do
-          let (:subject) { Percentage.new value, hide_percent_sign: false }
-          it 'should return "75" when passed true and "75%" otherwise' do
-            expect(subject.to_s).to eql '75%'
-            expect(subject.to_s(true)).to eql '75'
-            expect(subject.to_s(false)).to eql '75%'
-          end
-        end
-      end
-
-      context 'with a numeric value of 0.75' do
-        let (:value) { 0.75 }
-        it 'should return "75%"' do
-          expect(subject.to_s).to eql '75%'
-        end
-      end
-
-      context 'with a numeric value of 0.755' do
-        let (:value) { 0.755 }
-        it 'should return "75.5%"' do
-          expect(subject.to_s).to eql '75.5%'
         end
       end
     end

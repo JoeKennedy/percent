@@ -12,8 +12,6 @@ class Percentage < Numeric
     val = val.value      if val.is_a? self.class
 
     @value = val.to_d
-
-    @hide_percent_sign = options[:hide_percent_sign]
   end
 
   ###
@@ -21,10 +19,6 @@ class Percentage < Numeric
   ###
   def value
     @value ||= 0
-  end
-
-  def hide_percent_sign?
-    !!(@hide_percent_sign ||= false)
   end
 
   ###
@@ -47,16 +41,29 @@ class Percentage < Numeric
   ###
   # String conversion methods
   ###
-  def to_s(hide_percent_sign = self.hide_percent_sign?)
-    hide_percent_sign ? self.to_amount.to_s : "#{self.to_amount}%"
-  end
+  def to_s;      self.to_amount.to_s; end
+  def to_str;    self.to_f.to_s;      end
+  def to_string; self.to_s + '%';     end
 
-  def to_str
-    self.to_f.to_s
-  end
+  def format(options = {})
+    # set defaults; all other options default to false
+    options[:percent_sign] = options.fetch :percent_sign, true
 
-  def to_string
-    "#{self.to_float}%"
+    if options[:as_decimal]
+      return self.to_str
+    elsif options[:rounded]
+      string = self.to_float.round.to_s
+    elsif options[:no_decimal]
+      string = self.to_i.to_s
+    elsif options[:no_decimal_if_whole]
+      string = self.to_s
+    else
+      string = self.to_float.to_s
+    end
+
+    string += ' ' if options[:space_before_sign]
+    string += '%' if options[:percent_sign]
+    return string
   end
 
   ###

@@ -195,26 +195,6 @@ if defined? ActiveRecord
         end
       end
 
-      describe 'hide_percent_sign option' do
-        context 'when nothing is passed' do
-          it 'should show not percent sign' do
-            expect(subject.percent_complete.to_s).to eql "10"
-          end
-        end
-
-        context 'when true is passed' do
-          it 'should show not percent sign' do
-            expect(subject.without_percent_sign.to_s).to eql "20"
-          end
-        end
-
-        context 'when false is passed' do
-          it 'should show percent sign' do
-            expect(subject.with_percent_sign.to_s).to eql "30%"
-          end
-        end
-      end
-
       describe 'numericality validation' do
         context 'when no validation options are passed' do
           it 'ensures that the percentage can not be nil' do

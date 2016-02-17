@@ -173,44 +173,73 @@ percentage.to_rational # => 75/1
 ```
 
 String conversions have a couple of caveats and options that allow them to be a
-bit more diverse. There are three string conversion method:
+bit more diverse. There are four string conversion method:
 
 ```ruby
 percentage = Percentage.new(75)
-percentage.to_s      # => "75%"
+percentage.to_s      # => "75"
 percentage.to_str    # => "0.75"
-percentage.to_string # => "75.0%"
+percentage.to_string # => "75%"
+percentage.format    # => "75.0%"
 ```
 
-The `to_s` method outputs an integer if the percentage amount is divisible by
-100; otherwise it outputs the exact percentage amount as a float. To do this, it
-utilizes the `to_amount` method on the percentage object.
+The `to_s` and `to_string` methods outputs an integer if the percentage amount
+is divisible by 100; otherwise they output the exact percentage amount as a
+float. To do this, they utilize the `to_amount` method on the percentage object.
 
 ```ruby
-Percentage.new(75).to_s   # => "75%"
-Percentage.new(75.0).to_s # => "75%"
-Percentage.new(75.5).to_s # => "75.5%"
+Percentage.new(75).to_s   # => "75"
+Percentage.new(75.0).to_s # => "75"
+Percentage.new(75.5).to_s # => "75.5"
+
+Percentage.new(75).to_string   # => "75%"
+Percentage.new(75.0).to_string # => "75%"
+Percentage.new(75.5).to_string # => "75.5%"
 
 Percentage.new(75).to_amount   # => 75
 Percentage.new(75.0).to_amount # => 75
 Percentage.new(75.5).to_amount # => 75.5
 ```
 
-It's possible that you'd prefer to the `to_s` method not to return a percent
-sign at the end. Luckily for you, there are multiple ways to do this. You can
-either pass `true` to the `to_s` call, or pass `hide_percent_sign: true` when
-creating the Percentage object.
+The `format` method allows heavy customization of string output by allowing a
+number of options to be passed to it.
 
 ```ruby
-percentage = Percentage.new(75)
-percentage.to_s       # => "75%"
-percentage.to_s(true) # => "75"
-percentage.to_s       # => "75%"
+percentage = Percentage.from_amount(66.66)
+percentage.format                             # => "66.66%"
+percentage.format(percent_sign: true)         # => "66.66%"
+percentage.format(percent_sign: false)        # => "66.66"
+percentage.format(as_decimal: true)           # => "0.6666"
+percentage.format(rounded: true)              # => "67%"
+percentage.format(no_decimal: true)           # => "66%"
+percentage.format(no_decimal_if_whole: true)  # => "66.66%"
+percentage.format(space_before_sign: true)    # => "66.66 %"
+```
 
-percentage = Percentage.new(75, hide_percent_sign: true)
-percentage.to_s        # => "75"
-percentage.to_s(false) # => "75%"
-percentage.to_s        # => "75"
+Multiple options can be passed to `format`, but a lot of them don't necessarily
+make sense when passed together, such as `as_decimal: true` and `no_decimal:
+true`, since that will return "0" for any number between 0% and 99%. So instead,
+a few options have precedence over others. Namely, passing `as_decimal` ignores
+all the other options, and `rounded`, `no_decimal`, and `no_decimal_if_whole`
+are used in that order.
+
+```ruby
+percentage = Percentage.from_amount(66.66)
+
+# uses each option and returns => "67 "
+percentage.format(percent_sign: false, rounded: true, space_before_sign: true)
+
+# uses both options and returns => "66 %"
+percentage.format(no_decimal: true, space_before_sign: true)
+
+# uses only as_decimal and returns => "0.6666"
+percentage.format(percent_sign: false, as_decimal: true, no_decimal: true)
+
+# uses only rounded and returns => "67%"
+percentage.format(no_decimal_if_whole: true, no_decimal: true, rounded: true)
+
+# uses only no_decimal and returns => "66%"
+percentage.format(no_decimal_if_whole: true, no_decimal: true)
 ```
 
 ### `percentize` attribute
@@ -258,28 +287,6 @@ survey.percent_complete = Complex(10, 0)
 survey.percent_complete = Percentage.new(10)
 survey.percent_complete = Percentage.from_amount(10.0)
 survey.percent_complete = Percentage.from_fraction(0.1)
-```
-
-#### Show percent sign
-
-By default, the `to_s` method for your attribute will return the percentage
-without a percent sign. Note that this the opposite of the behavior of a
-percentage object. Views make it easy to append a percent sign if it's
-necessary, which is why they are off by default for a `percentize`d attribute.
-
-If, however, you'd like the `to_s` method of your attribute to always end with a
-percent sign, feel free to hide it:
-
-```ruby
-# in Survey model
-percentize :without_percent_sign_fraction
-percentize :with_percent_sign_fraction, hide_percent_sign: false
-
-# in console, controller, view, etc.
-survey.without_percent_sign = 10
-survey.with_percent_sign = 10
-survey.without_percent_sign.to_s # => "10"
-survey.with_percent_sign.to_s    # => "10%"
 ```
 
 #### Allow nil values
