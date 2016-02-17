@@ -1,5 +1,3 @@
-# require 'active_record'
-
 module Percent
   module ActiveRecord
     module Percentizable
