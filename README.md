@@ -292,7 +292,7 @@ the `:allow_nil` parameter:
 percentize :optional_fraction, allow_nil: true
 
 # in change function in migration
-add_percentage :survey, optional, amount: { null: true, default: nil }
+add_percentage :survey, :optional, amount: { null: true, default: nil }
 
 # now blank assignments are permitted
 survey.optional = nil
