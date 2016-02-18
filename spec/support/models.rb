@@ -2,8 +2,8 @@ require 'spec_helper'
 
 class Survey < ActiveRecord::Base
   percentize :percent_complete_fraction
-  percentize :without_percent_sign_fraction, hide_percent_sign: true
-  percentize :with_percent_sign_fraction,    hide_percent_sign: false
+  percentize :without_percent_sign_fraction
+  percentize :with_percent_sign_fraction
   percentize :optional_fraction,             allow_nil: true
   percentize :sans_validation_fraction,      disable_validation: true
   percentize :sans_frac_validate_fraction,   fraction_numericality: false
