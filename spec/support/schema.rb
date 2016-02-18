@@ -3,8 +3,8 @@ ActiveRecord::Schema.define do
 
   create_table :surveys, force: true do |t|
     t.decimal :percent_complete_fraction
-    t.decimal :without_percent_sign_fraction
-    t.decimal :with_percent_sign_fraction
+    t.decimal :non_fraction_ending
+    t.decimal :as_option_percent_fraction
     t.decimal :optional_fraction
     t.decimal :sans_validation_fraction
     t.decimal :sans_frac_validate_fraction

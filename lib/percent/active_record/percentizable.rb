@@ -10,7 +10,15 @@ module Percent
 
           columns.each do |column|
             column_name = column.to_s
-            field_name = column_name.sub /_fraction$/, ""
+
+            # determine attribute name
+            if options[:as]
+              attribute_name = options[:as]
+            elsif column_name =~ /_fraction$/
+              attribute_name = column_name.sub /_fraction$/, ""
+            else
+              attribute_name = column_name + '_percent'
+            end
 
             # validation
             unless options[:disable_validation]
@@ -21,7 +29,7 @@ module Percent
               if numericality || !options.key?(:numericality)
                 numericality = numericality_range 0, 100 unless fraction.is_a? Hash
 
-                validates field_name, {
+                validates attribute_name, {
                   allow_nil: allow_nil,
                   'percent/active_model/percentage': numericality
                 }
@@ -37,13 +45,13 @@ module Percent
             end
 
             # percent attribute getter
-            define_method field_name do
+            define_method attribute_name do
               value = public_send column_name
               value.nil? ? value : Percentage.from_fraction(value, options)
             end
 
             # percent attribute setter
-            define_method "#{field_name}=" do |value|
+            define_method "#{attribute_name}=" do |value|
               unless value.nil? || value.is_a?(Percentage)
                 value = Percentage.from_amount value, options
               end

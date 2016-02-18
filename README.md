@@ -289,6 +289,27 @@ survey.percent_complete = Percentage.from_amount(10.0)
 survey.percent_complete = Percentage.from_fraction(0.1)
 ```
 
+#### Percentage attribute naming options
+
+You have a few options for naming your percentized attribute. If your column
+name does not end in `_fraction`, then then `_percent` will be tacked on to the
+column name to make the attribute. Also, if you'd like to choose the name of
+your attribute specifically, you can pass that name to the `:as` option.
+
+```ruby
+# Survey model
+monetize :percent_complete_fraction
+monetize :non_fraction_ending
+monetize :as_option_percent_fraction, as: :percent
+
+# in console, controller, view, etc.
+survey = Survey.new(percent_complete_fraction: 0.1, non_fraction_ending: 0.2,
+                    as_option_percent_fraction: 0.3)
+survey.percent_complete            # => 10%
+survey.non_fraction_ending_percent # => 20%
+survey.percent                     # => 30%
+```
+
 #### Allow nil values
 
 If you want to allow nil and/or blank values to a percentized field, you can use

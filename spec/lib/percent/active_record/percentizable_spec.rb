@@ -6,10 +6,10 @@ if defined? ActiveRecord
       shared_examples_for 'Survey methods' do
         it { is_expected.to respond_to(:percent_complete) }
         it { is_expected.to respond_to(:percent_complete=) }
-        it { is_expected.to respond_to(:without_percent_sign) }
-        it { is_expected.to respond_to(:without_percent_sign=) }
-        it { is_expected.to respond_to(:with_percent_sign) }
-        it { is_expected.to respond_to(:with_percent_sign=) }
+        it { is_expected.to respond_to(:non_fraction_ending_percent) }
+        it { is_expected.to respond_to(:non_fraction_ending_percent=) }
+        it { is_expected.to respond_to(:percent) }
+        it { is_expected.to respond_to(:percent=) }
         it { is_expected.to respond_to(:optional) }
         it { is_expected.to respond_to(:optional=) }
         it { is_expected.to respond_to(:sans_validation) }
@@ -28,8 +28,8 @@ if defined? ActiveRecord
 
       let (:subject) do
         Survey.create percent_complete_fraction: 0.1,
-                      without_percent_sign_fraction: 0.2,
-                      with_percent_sign_fraction: 0.3,
+                      non_fraction_ending: 0.2,
+                      as_option_percent_fraction: 0.3,
                       optional_fraction: 0.4,
                       sans_validation_fraction: 0.5,
                       sans_frac_validate_fraction: 0.6,
@@ -51,8 +51,8 @@ if defined? ActiveRecord
       describe 'percentized attribute getter' do
         it 'attaches a Percentage object to model field' do
           expect(subject.percent_complete).to be_an_instance_of Percentage
-          expect(subject.without_percent_sign).to be_an_instance_of Percentage
-          expect(subject.with_percent_sign).to be_an_instance_of Percentage
+          expect(subject.non_fraction_ending_percent).to be_an_instance_of Percentage
+          expect(subject.percent).to be_an_instance_of Percentage
           expect(subject.optional).to be_an_instance_of Percentage
           expect(subject.sans_validation).to be_an_instance_of Percentage
           expect(subject.sans_frac_validate).to be_an_instance_of Percentage
@@ -67,8 +67,8 @@ if defined? ActiveRecord
 
         it 'returns the expected percentage amount as a Percentage object' do
           expect(subject.percent_complete).to eql Percentage.new(10)
-          expect(subject.without_percent_sign).to eql Percentage.new(20)
-          expect(subject.with_percent_sign).to eql Percentage.new(30)
+          expect(subject.non_fraction_ending_percent).to eql Percentage.new(20)
+          expect(subject.percent).to eql Percentage.new(30)
           expect(subject.optional).to eql Percentage.new(40)
           expect(subject.sans_validation).to eql Percentage.new(50)
           expect(subject.sans_frac_validate).to eql Percentage.new(60)
@@ -151,8 +151,8 @@ if defined? ActiveRecord
         context 'assign value to percentized attribute on create' do
           it 'assigns the correct value from a Percentage object' do
             subject = Survey.create percent_complete: 15.0,
-                                    without_percent_sign: 0,
-                                    with_percent_sign: 0,
+                                    non_fraction_ending_percent: 0,
+                                    percent: 0,
                                     sans_frac_validate: 0
             expect(subject.valid?).to be_truthy
             expect(subject.percent_complete_fraction).to eql BigDecimal.new('0.15')
@@ -160,8 +160,8 @@ if defined? ActiveRecord
 
           it 'assigns the correct value from a number' do
             subject = Survey.create percent_complete: 35.0,
-                                    without_percent_sign: 0,
-                                    with_percent_sign: 0,
+                                    non_fraction_ending_percent: 0,
+                                    percent: 0,
                                     sans_frac_validate: 0
             expect(subject.valid?).to be_truthy
             expect(subject.percent_complete_fraction).to eql BigDecimal.new('0.35')
@@ -169,8 +169,8 @@ if defined? ActiveRecord
 
           it 'assigns the correct value from a string' do
             subject = Survey.create percent_complete: '55',
-                                    without_percent_sign: 0,
-                                    with_percent_sign: 0,
+                                    non_fraction_ending_percent: 0,
+                                    percent: 0,
                                     sans_frac_validate: 0
             expect(subject.valid?).to be_truthy
             expect(subject.percent_complete_fraction).to eql BigDecimal.new('0.55')
