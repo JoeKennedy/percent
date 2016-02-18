@@ -298,9 +298,9 @@ your attribute specifically, you can pass that name to the `:as` option.
 
 ```ruby
 # Survey model
-monetize :percent_complete_fraction
-monetize :non_fraction_ending
-monetize :as_option_percent_fraction, as: :percent
+percentize :percent_complete_fraction
+percentize :non_fraction_ending
+percentize :as_option_percent_fraction, as: :percent
 
 # in console, controller, view, etc.
 survey = Survey.new(percent_complete_fraction: 0.1, non_fraction_ending: 0.2,
@@ -417,3 +417,4 @@ column uses to these methods, like `precision`, `default`, `null`, etc.
 - Allow other suffixes besides 'fraction' for columns
 - Add options for preventing strings and/or bools from being passed to a
   percentage object
+- Config file for global configuration
