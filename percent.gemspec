@@ -5,9 +5,12 @@ Gem::Specification.new do |s|
   s.license  = 'MIT'
   s.authors  = ['Joe Kennedy']
   s.summary  = 'Percent objects and integration with Rails'
-  s.files    = Dir.glob('{lib,spec}/**/*') + %w(percent.gemspec)
+
+  s.files = Dir.glob('{lib,spec}/**/*') + %w(percent.gemspec)
+  s.files.delete = ('spec/percent.sqlite3')
 
   s.test_files   = s.files.grep(%r{^spec/})
+
   s.require_path = 'lib'
 
   s.add_dependency 'activesupport'
