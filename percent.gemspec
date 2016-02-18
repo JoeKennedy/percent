@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name     = 'percent'
-  s.version  = '0.0.0'
+  s.version  = '0.0.1'
   s.platform = Gem::Platform::RUBY
   s.license  = 'MIT'
   s.authors  = ['Joe Kennedy']
