@@ -8,7 +8,7 @@ if defined? ActiveRecord
       @connection = ActiveRecord::Base.connection
       @connection.send :extend, Percent::ActiveRecord::MigrationExtensions::SchemaStatements
 
-      @connection.drop_table :job_trackers if @connection.table_exists? :job_trackers
+      @connection.drop_table :job_trackers if @connection.data_source_exists? :job_trackers
       @connection.create_table :job_trackers
 
       @options = { default: 1, null: true }

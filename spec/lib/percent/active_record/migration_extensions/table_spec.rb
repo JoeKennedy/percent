@@ -10,7 +10,7 @@ if defined? ActiveRecord
 
       @options = { default: 1, null: true }
 
-      @connection.drop_table :job_trackers if @connection.table_exists? :job_trackers
+      @connection.drop_table :job_trackers if @connection.data_source_exists? :job_trackers
       @connection.create_table :job_trackers do |t|
         t.percentage :percentage
         t.percentage :full_options, @options

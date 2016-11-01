@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name     = 'percent'
-  s.version  = '0.0.1'
+  s.version  = '0.1.0'
   s.platform = Gem::Platform::RUBY
   s.license  = 'MIT'
   s.authors  = ['Joe Kennedy']
@@ -15,9 +15,9 @@ Gem::Specification.new do |s|
 
   s.require_path = 'lib'
 
-  s.add_dependency 'activesupport', '~> 4.2'
+  s.add_dependency 'activesupport', '>= 4.2'
 
-  s.add_development_dependency 'activerecord', '~> 4.2'
+  s.add_development_dependency 'activerecord', '>= 4.2'
   s.add_development_dependency 'bundler',      '~> 1.11'
   s.add_development_dependency 'rake',         '~> 10'
   s.add_development_dependency 'rspec',        '~> 3.0'
